@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.test.marvel.R
 import com.test.marvel.databinding.ViewListHeroItemBinding
 import com.test.marvel.data.models.Result
 
@@ -27,11 +28,13 @@ class ListHeroesAdapter(
     }
 
     override fun onBindViewHolder(holder: HeroesHolder, position: Int) {
-        Log.d(TAG, data[position].thumbnail.path)
+        Log.d(TAG, data[position].description)
 
         holder.holderViewBinding.let {
-            Glide.with(context).load(data[position].thumbnail.path).into(it.ivThumbnailHero)
-            it.tvNameHero.text =  data[position].name
+            Glide.with(context).load(data[position].thumbnail.path).placeholder(R.drawable.noimage)
+                .into(it.ivThumbnailHero)
+            it.tvNameHero.text = data[position].name
+            it.tvBioHero.text = data[position].description
         }
     }
 
