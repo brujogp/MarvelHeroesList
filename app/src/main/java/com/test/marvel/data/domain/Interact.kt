@@ -19,7 +19,7 @@ class Interact @Inject constructor(private val repository: MainRepository) {
             (response.body as CharactersResponse).data.results.let {
                 it.forEach { d ->
                     d.thumbnail.path =
-                        "${d.thumbnail.path}/landscape_medium.${d.thumbnail.extension}".replace(
+                        "${d.thumbnail.path}/standard_fantastic.${d.thumbnail.extension}".replace(
                             "http",
                             "https"
                         )
@@ -27,7 +27,7 @@ class Interact @Inject constructor(private val repository: MainRepository) {
 
                 var i = 0
                 while (i < it.size) {
-                    if (it[i].description == "" || it[i].description.isEmpty() || it[i].description.isBlank() || it[i].description == " ") {
+                    if (it[i].description.isEmpty() || it[i].description.isBlank()) {
                         it.remove(it[i])
                         i--
                     }
