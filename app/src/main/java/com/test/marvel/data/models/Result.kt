@@ -2,7 +2,7 @@ package com.test.marvel.data.models
 
 data class Result(
     val comics: Comics?,
-    val description: String,
+    var description: String,
     val events: Events,
     val id: Int,
     val modified: String,

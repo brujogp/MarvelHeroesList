@@ -26,8 +26,10 @@ class Interact @Inject constructor(private val repository: MainRepository) {
                 var i = 0
                 while (i < it.size) {
                     if (it[i].description.isEmpty() || it[i].description.isBlank()) {
-                        it.remove(it[i])
-                        i--
+                        it[i].description = "No se tiene descripción del personaje"
+
+                        //it.remove(it[i])
+                        //i--
                     }
                     i++
                 }
