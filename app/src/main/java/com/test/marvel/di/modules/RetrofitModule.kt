@@ -1,7 +1,6 @@
 package com.test.marvel.di.modules
 
 import android.content.Context
-import android.util.Log
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.test.marvel.BuildConfig
@@ -47,6 +46,14 @@ class RetrofitModule {
                     customUrl.host(chain.request().url.host)
                     customUrl.encodedPath(chain.request().url.encodedPath)
                     customUrl.scheme(chain.request().url.scheme)
+
+                    for (e: String in chain.request().url.queryParameterNames) {
+                        val queryValue: List<String?> =
+                            chain.request().url.queryParameterValues(e)
+
+                        customUrl.addQueryParameter(e, queryValue[0])
+                    }
+
                     customUrl.addQueryParameter("apikey", Api.API_KEY)
                     customUrl.addQueryParameter("hash", Api.M5D_DIGEST_HASH)
                     customUrl.addQueryParameter("ts", "1")

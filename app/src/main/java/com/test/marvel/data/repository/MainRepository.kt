@@ -6,10 +6,9 @@ import java.lang.Exception
 import javax.inject.Inject
 
 class MainRepository @Inject constructor(private val api: Api) {
-
-    suspend fun getCharacters(): Status {
+    suspend fun getCharacters(offset: String): Status {
         return try {
-            val request = this.api.getCharacters()
+            val request = this.api.getCharacters(offset = offset)
 
             if (request.code() == Api.NOT_FOUND_CODE) {
                 Status.NotFound
@@ -20,5 +19,4 @@ class MainRepository @Inject constructor(private val api: Api) {
             Status.Error(e.message!!)
         }
     }
-
 }

@@ -19,12 +19,12 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     private val charactersMutableLiveData = MutableLiveData<Status>()
 
-    fun getCharacters(): LiveData<Status> {
+    fun getCharacters(offset: String): LiveData<Status> {
         this@MainViewModel.charactersMutableLiveData.value =
             Status.Loading
 
         viewModelScope.launch {
-            this@MainViewModel.charactersMutableLiveData.postValue(this@MainViewModel.interactor.getCharactersList())
+            this@MainViewModel.charactersMutableLiveData.postValue(this@MainViewModel.interactor.getCharactersList(offset))
         }
 
         return charactersMutableLiveData

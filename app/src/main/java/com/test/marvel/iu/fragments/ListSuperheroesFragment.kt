@@ -5,9 +5,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,8 +23,16 @@ class ListSuperheroesFragment : Fragment() {
         const val TAG = "ListSuperheroesFragment"
     }
 
+    private lateinit var temporalHeroesList: MutableList<Result>
+    private var requireAddNewItems: Boolean = false
+    private var offsetResults = 0
+
+    private var totalHeroes = mutableListOf<Result>()
+
     private var binding: FragmentListSuperheroesBinding? = null
     private val viewModel: MainViewModel by activityViewModels()
+
+    private val loadNewHeroesMutableLiveData = MutableLiveData<Boolean>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,14 +44,28 @@ class ListSuperheroesFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        this.binding!!.let {
-
+        this.loadNewHeroesMutableLiveData.observe(viewLifecycleOwner) {
+            if (it) {
+                this@ListSuperheroesFragment.offsetResults += 100
+                Log.d(
+                    TAG,
+                    "Hace petición nueva. Elementos actuales: ${this@ListSuperheroesFragment.totalHeroes.size}"
+                )
+                makeRequestListHeroes(it)
+            }
         }
     }
 
     override fun onStart() {
         super.onStart()
-        this.viewModel.getCharacters().observe(viewLifecycleOwner, onCharacterReceived)
+        makeRequestListHeroes()
+    }
+
+    private fun makeRequestListHeroes(requireAddNewItems: Boolean = false) {
+        this.requireAddNewItems = requireAddNewItems
+
+        this.viewModel.getCharacters(this.offsetResults.toString())
+            .observe(viewLifecycleOwner, onCharacterReceived)
     }
 
     private val onCharacterReceived = Observer<Status> {
@@ -53,7 +75,11 @@ class ListSuperheroesFragment : Fragment() {
             }
             is Status.SuccessfulResponse<*> -> {
                 val data = (it.body as CharactersResponse).data.results
-                configHeroesList(data)
+
+                this.temporalHeroesList = data
+                this.totalHeroes.addAll(this.temporalHeroesList)
+
+                configHeroesList(this.totalHeroes)
             }
             is Status.Error -> {
                 Log.d(TAG, it.message)
@@ -63,11 +89,23 @@ class ListSuperheroesFragment : Fragment() {
     }
 
     private fun configHeroesList(charactersResponse: List<Result>) {
-        val adapterHeroesList = ListHeroesAdapter(requireContext(), charactersResponse as MutableList<Result>)
+        val adapterHeroesList =
+            ListHeroesAdapter(
+                requireContext(),
+                charactersResponse as MutableList<Result>,
+                this.loadNewHeroesMutableLiveData
+            )
 
-        this.binding!!.rvHeroesList.adapter = adapterHeroesList
-        this.binding!!.rvHeroesList.layoutManager =
-            LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+        if (this.requireAddNewItems) {
+            adapterHeroesList.notifyItemRangeChanged(
+                this@ListSuperheroesFragment.totalHeroes.size - this@ListSuperheroesFragment.temporalHeroesList.size,
+                (this@ListSuperheroesFragment.totalHeroes.size - 1)
+            )
+        } else {
+            this.binding!!.rvHeroesList.adapter = adapterHeroesList
+            this.binding!!.rvHeroesList.layoutManager =
+                LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+        }
     }
 
     override fun onDestroyView() {

@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -15,10 +16,12 @@ import com.bumptech.glide.request.target.Target
 import com.test.marvel.R
 import com.test.marvel.databinding.ViewListHeroItemBinding
 import com.test.marvel.data.models.Result
+import com.test.marvel.iu.fragments.ListSuperheroesFragment
 
 class ListHeroesAdapter(
     private val context: Context,
-    private val data: MutableList<Result>
+    private val data: MutableList<Result>,
+    private val loadInfo: MutableLiveData<Boolean>
 ) : RecyclerView.Adapter<ListHeroesAdapter.HeroesHolder>() {
     private var binding: ViewListHeroItemBinding? = null
 
@@ -33,21 +36,20 @@ class ListHeroesAdapter(
     }
 
     override fun onBindViewHolder(holder: HeroesHolder, position: Int) {
-        Log.d(TAG, data[position].description)
-
         holder.holderViewBinding.let {
-            it.tvNameHero.text = data[position].name
-            it.tvBioHero.text = data[position].description
-
-            it.iv.visibility = View.VISIBLE
-            it.tvNameHero.visibility = View.VISIBLE
-            it.tvBioHero.visibility = View.VISIBLE
+            it.tvNameHero.text = data[holder.adapterPosition].name
+            it.tvBioHero.text = data[holder.adapterPosition].description
 
             Glide.with(context)
-                .load(data[position].thumbnail.path)
+                .load(data[holder.adapterPosition].thumbnail.path)
                 .placeholder(R.drawable.noimage)
                 .into(it.ivThumbnailHero)
         }
+
+        if ((data.size - 10) == holder.adapterPosition) {
+            this.loadInfo.postValue(true)
+        }
+
     }
 
     override fun getItemCount(): Int {
