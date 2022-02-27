@@ -27,8 +27,9 @@ class Interact @Inject constructor(private val repository: MainRepository) {
 
                 var i = 0
                 while (i < it.size) {
-                    if (it[i].description == "" || it[i].description.isEmpty() || it[i].description.isBlank() || it[i].description == " " ||) {
+                    if (it[i].description == "" || it[i].description.isEmpty() || it[i].description.isBlank() || it[i].description == " ") {
                         it.remove(it[i])
+                        i--
                     }
                     i++
                 }

@@ -63,7 +63,7 @@ class ListSuperheroesFragment : Fragment() {
     }
 
     private fun configHeroesList(charactersResponse: List<Result>) {
-        val adapterHeroesList = ListHeroesAdapter(requireContext(), charactersResponse)
+        val adapterHeroesList = ListHeroesAdapter(requireContext(), charactersResponse as MutableList<Result>)
 
         this.binding!!.rvHeroesList.adapter = adapterHeroesList
         this.binding!!.rvHeroesList.layoutManager =
