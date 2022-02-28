@@ -49,7 +49,7 @@ class ListSuperheroesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         this.onHeroClick.observe(viewLifecycleOwner) {
             this.viewModel.heroSelected(this@ListSuperheroesFragment.totalHeroes[it])
-            findNavController().navigate(R.id.action_listSuperheroesFragment_to_heroDetailsFragment)
+            findNavController().navigate(R.id.heroDetailsFragment)
         }
 
         this.loadNewHeroesMutableLiveData.observe(viewLifecycleOwner) {

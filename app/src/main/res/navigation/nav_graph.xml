@@ -9,7 +9,7 @@
         android:id="@+id/listSuperheroesFragment"
         android:name="com.test.marvel.iu.fragments.ListSuperheroesFragment"
         android:label="fragment_list_superheroes"
-        tools:layout="@layout/fragment_list_superheroes">
+        tools:layout="@layout/fragment_list_superheroes" >
         <action
             android:id="@+id/action_listSuperheroesFragment_to_heroDetailsFragment"
             app:destination="@id/heroDetailsFragment" />

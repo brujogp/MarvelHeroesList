@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import androidx.lifecycle.Observer
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.test.marvel.R
@@ -33,6 +35,9 @@ class HeroDetailsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         this.binding = FragmentDetailsHeroBinding.inflate(inflater, container, false)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            findNavController().navigate(R.id.listSuperheroesFragment)
+        }
         return this.binding!!.root
     }
 
