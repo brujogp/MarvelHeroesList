@@ -2,6 +2,7 @@ package com.test.marvel.data.domain
 
 import com.test.marvel.data.models.CharactersResponse
 import com.test.marvel.data.models.Status
+import com.test.marvel.data.models.comics.ComicsResponse
 import com.test.marvel.data.repository.MainRepository
 import javax.inject.Inject
 
@@ -32,6 +33,25 @@ class Interact @Inject constructor(private val repository: MainRepository) {
                         //i--
                     }
                     i++
+                }
+            }
+        }
+
+        return response
+    }
+
+
+    suspend fun getComicsByCharacterId(characterId: String): Status {
+        val response = this.repository.getComicsByCharacterId(characterId)
+
+        if (response is Status.SuccessfulResponse<*>) {
+            (response.body as ComicsResponse).data.results.let {
+                it.forEach { d ->
+                    d.thumbnail.path=
+                        "${d.thumbnail.path}/portrait_incredible.${d.thumbnail.extension}".replace(
+                            "http",
+                            "https"
+                        )
                 }
             }
         }

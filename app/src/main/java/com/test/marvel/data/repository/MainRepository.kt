@@ -19,4 +19,18 @@ class MainRepository @Inject constructor(private val api: Api) {
             Status.Error(e.message!!)
         }
     }
+
+    suspend fun getComicsByCharacterId(characterId: String): Status {
+        return try {
+            val request = api.getComicsOfCharacter(characterId)
+
+            if (request.code() == Api.NOT_FOUND_CODE) {
+                Status.NotFound
+            } else {
+                Status.SuccessfulResponse(request.body())
+            }
+        } catch (e: Exception) {
+            Status.Error(e.message!!)
+        }
+    }
 }

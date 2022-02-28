@@ -21,7 +21,8 @@ import com.test.marvel.iu.fragments.ListSuperheroesFragment
 class ListHeroesAdapter(
     private val context: Context,
     private val data: MutableList<Result>,
-    private val loadInfo: MutableLiveData<Boolean>
+    private val loadInfo: MutableLiveData<Boolean>,
+    private val onClickHero: MutableLiveData<Int>
 ) : RecyclerView.Adapter<ListHeroesAdapter.HeroesHolder>() {
     private var binding: ViewListHeroItemBinding? = null
 
@@ -37,16 +38,20 @@ class ListHeroesAdapter(
 
     override fun onBindViewHolder(holder: HeroesHolder, position: Int) {
         holder.holderViewBinding.let {
-            it.tvNameHero.text = data[position].name
-            it.tvBioHero.text = data[position].description
+            it.containerHero.setOnClickListener {
+                this@ListHeroesAdapter.onClickHero.postValue(holder.layoutPosition)
+            }
+
+            it.tvNameHero.text = data[holder.layoutPosition].name
+            it.tvBioHero.text = data[holder.layoutPosition].description
 
             Glide.with(context)
-                .load(data[position].thumbnail.path)
+                .load(data[holder.layoutPosition].thumbnail.path)
                 .placeholder(R.drawable.noimage)
                 .into(it.ivThumbnailHero)
         }
 
-        if ((data.size - 30) == position) {
+        if ((data.size - 50) == holder.layoutPosition) {
             this.loadInfo.postValue(true)
         }
 

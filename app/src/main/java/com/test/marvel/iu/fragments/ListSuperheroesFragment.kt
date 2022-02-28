@@ -9,8 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.test.marvel.R
 import com.test.marvel.data.models.CharactersResponse
 import com.test.marvel.data.models.Result
 import com.test.marvel.data.models.Status
@@ -33,6 +35,7 @@ class ListSuperheroesFragment : Fragment() {
     private val viewModel: MainViewModel by activityViewModels()
 
     private val loadNewHeroesMutableLiveData = MutableLiveData<Boolean>()
+    private val onHeroClick = MutableLiveData<Int>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,13 +47,14 @@ class ListSuperheroesFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        this.onHeroClick.observe(viewLifecycleOwner) {
+            this.viewModel.heroSelected(this@ListSuperheroesFragment.totalHeroes[it])
+            findNavController().navigate(R.id.action_listSuperheroesFragment_to_heroDetailsFragment)
+        }
+
         this.loadNewHeroesMutableLiveData.observe(viewLifecycleOwner) {
             if (it) {
                 this@ListSuperheroesFragment.offsetResults += 100
-                Log.d(
-                    TAG,
-                    "Hace petición nueva. Elementos actuales: ${this@ListSuperheroesFragment.totalHeroes.size}"
-                )
                 makeRequestListHeroes(it)
             }
         }
@@ -71,9 +75,11 @@ class ListSuperheroesFragment : Fragment() {
     private val onCharacterReceived = Observer<Status> {
         when (it) {
             is Status.Loading -> {
-                Log.d(TAG, "Loading")
+                this@ListSuperheroesFragment.binding!!.progressBar.visibility = View.VISIBLE
             }
             is Status.SuccessfulResponse<*> -> {
+                this@ListSuperheroesFragment.binding!!.progressBar.visibility = View.GONE
+
                 val data = (it.body as CharactersResponse).data.results
 
                 this.temporalHeroesList = data
@@ -82,6 +88,7 @@ class ListSuperheroesFragment : Fragment() {
                 configHeroesList(this.totalHeroes)
             }
             is Status.Error -> {
+                this@ListSuperheroesFragment.binding!!.progressBar.visibility = View.GONE
                 Log.d(TAG, it.message)
             }
             else -> {}
@@ -93,7 +100,8 @@ class ListSuperheroesFragment : Fragment() {
             ListHeroesAdapter(
                 requireContext(),
                 charactersResponse as MutableList<Result>,
-                this.loadNewHeroesMutableLiveData
+                this.loadNewHeroesMutableLiveData,
+                this.onHeroClick
             )
 
         if (this.requireAddNewItems) {

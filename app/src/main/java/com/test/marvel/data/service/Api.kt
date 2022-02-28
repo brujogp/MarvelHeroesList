@@ -1,6 +1,7 @@
 package com.test.marvel.data.service
 
 import com.test.marvel.data.models.CharactersResponse
+import com.test.marvel.data.models.comics.ComicsResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -19,4 +20,9 @@ interface Api {
         @Query("limit") limitResults: String = "100",
         @Query("offset") offset: String = "0"
     ): Response<CharactersResponse>
+
+    @GET("/v1/public/comics")
+    suspend fun getComicsOfCharacter(
+        @Query("characters") characterId: String
+    ): Response<ComicsResponse>
 }
