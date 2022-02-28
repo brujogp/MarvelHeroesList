@@ -39,19 +39,19 @@ class ListHeroesAdapter(
     override fun onBindViewHolder(holder: HeroesHolder, position: Int) {
         holder.holderViewBinding.let {
             it.containerHero.setOnClickListener {
-                this@ListHeroesAdapter.onClickHero.postValue(holder.layoutPosition)
+                this@ListHeroesAdapter.onClickHero.postValue(holder.adapterPosition)
             }
 
-            it.tvNameHero.text = data[holder.layoutPosition].name
-            it.tvBioHero.text = data[holder.layoutPosition].description
+            it.tvNameHero.text = data[holder.adapterPosition].name
+            it.tvBioHero.text = data[holder.adapterPosition].description
 
             Glide.with(context)
-                .load(data[holder.layoutPosition].thumbnail.path)
+                .load(data[holder.adapterPosition].thumbnail.path)
                 .placeholder(R.drawable.noimage)
                 .into(it.ivThumbnailHero)
         }
 
-        if ((data.size - 50) == holder.layoutPosition) {
+        if ((data.size - 50) == holder.adapterPosition) {
             this.loadInfo.postValue(true)
         }
 
